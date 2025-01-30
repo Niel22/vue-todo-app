@@ -1,35 +1,19 @@
 <template>
     <div>
-        <input type="text" placeholder="What needs to be done" class="todo-input" v-model="newTodo" @keyup.enter="addTodo">
+        <AddTodo  @addedTodo="addTodo"/>
 
         <div v-if="todosFilter.length > 0">
-            <todo-item v-for="todo in todosFilter" :key="todo.id" class="todo-item" :todo="todo" @removedTodo="removeTodo" @updatedTodo="updateTodo" />
+            <TodoItem v-for="todo in todosFilter" :key="todo.id" class="todo-item" :todo="todo" />
         </div>
         <div v-else>No Todos Found</div>
 
-        <div class="extra-container">
-            <div><label><input type="checkbox" :checked="!anyRemaining" @change="checkAllTodos">Check All</label></div>
-            <div>{{ remaining }} items left</div>
-        </div>
+
+        <TodoItemsRemaining class="extra-container" :remaining="remaining" @checkedAllTodos="checkAllTodos"/>
 
         <div class="extra-container">
-            <div>
-                <button :class="{ active: filter === 'all'}" @click="filter = 'all'">
-                    All
-                </button>
-                <button :class="{ active: filter === 'active'}" @click="filter = 'active'">
-                    Active
-                </button>
-                <button :class="{ active: filter === 'completed'}" @click="filter = 'completed'">
-                    Completed
-                </button>
-            </div>
+            <TodoFilter :filter="filter" @updatedFilter="setFilter"/>
 
-            <div>
-                <transition name="fade">
-                    <button v-if="showClearCompletedButton" @click="clearCompleted">Clear Completed</button>
-                </transition>
-            </div>
+            <ClearCompleted :showClearCompletedButton="showClearCompletedButton" @clearedCompleted="clearCompleted"/>
         </div>
     </div>
   </template>
@@ -37,17 +21,23 @@
   <script>
 
   import TodoItem from './TodoItem.vue';
+  import TodoItemsRemaining from './TodoItemsRemaining.vue';
+  import TodoFilter from './TodoFilter.vue';
+  import ClearCompleted from './ClearCompleted.vue';
+  import AddTodo from './AddTodo.vue';
 
   export default {
     name: 'TodoList',
     components: {
-        TodoItem
+        TodoItem,
+        TodoItemsRemaining,
+        TodoFilter,
+        ClearCompleted,
+        AddTodo
     },
     data () {
       return {
-        newTodo: '',
         idForTodo: 4,
-        beforeEditCache: '',
         filter: '',
         todos: [
             {
@@ -71,6 +61,10 @@
 
         ]
       }
+    },
+    created(){
+      eventBus.$on('removedTodo', (todoToBeDeleted) => this.removeTodo(todoToBeDeleted));
+      eventBus.$on('updatedTodo', (todoToUpdate, newTitle) => this.updateTodo(todoToUpdate, newTitle));
     },
     computed: {
         remaining(){
@@ -106,20 +100,14 @@
         }
     },
     methods: {
-        addTodo(){
-
-            if(this.newTodo.trim().length == 0){
-                return;
-            }
-
+        addTodo(newTodo){
             this.todos.push({
                 id: this.idForTodo,
-                title: this.newTodo,
+                title: newTodo,
                 completed: false,
                 editing: false
             });
 
-            this.newTodo = '';
             this.idForTodo++
         },
 
@@ -138,9 +126,13 @@
         checkAllTodos(){
             const isChecked = event.target.checked;
             this.todos.forEach((todo) => todo.completed = isChecked);
+            console.log(this.todos);
         },
         clearCompleted(){
             this.todos = this.todos.filter(todo => !todo.completed);
+        },
+        setFilter(filter){
+          this.filter = filter;
         }
         
     }

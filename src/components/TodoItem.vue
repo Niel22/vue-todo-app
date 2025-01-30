@@ -5,9 +5,11 @@
             <div v-if="!todo.editing" class="todo-item-label" :class="{ completed : todo.completed}" @dblclick="editTodo">{{ todo.title }}</div>
             <input v-else type="text" v-focus v-model="todo.title" class="todo-item-edit" @keyup.enter="updateTodo" @blur="updateTodo" @keyup.escape="cancelEdit">
         </div>
-        
-        <div class="remove-item" @click="removeTodo">
-            &times;
+        <div>
+            <button @click="pluralize">Plural</button>
+            <span class="remove-item" @click="removeTodo">
+                &times;
+            </span>
         </div>
 
     </div>
@@ -15,7 +17,7 @@
 
 <script>
 export default{
-    name: 'todo-item',
+    name: 'TodoItem',
     props: {
         todo: {
             type: Object,
@@ -27,9 +29,15 @@ export default{
             beforeEditCache: ''
         }
     },
+    created(){
+        eventBus.$on('pluralize', this.handlePluralize);
+    },
+    beforeDestroy(){
+        eventBus.$off('pluralize', this.handlePluralize);
+    },
     methods: {
         removeTodo(){
-            this.$emit('removedTodo', this.todo);
+            eventBus.$emit('removedTodo', this.todo);
         },
         editTodo(){
             this.beforeEditCache = this.todo.title;
@@ -47,9 +55,14 @@ export default{
             }
             
             this.todo.editing = false;
-            this.$emit('updatedTodo', this.todo.id, this.todo.title);
-
+            eventBus.$emit('updatedTodo', this.todo.id, this.todo.title);
         },
+        pluralize(){
+            eventBus.$emit('pluralize');
+        },
+        handlePluralize(){
+            this.todo.title += 's';
+        }
     },
     directives: {
         focus: {
