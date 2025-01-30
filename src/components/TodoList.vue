@@ -1,21 +1,9 @@
 <template>
     <div>
         <input type="text" placeholder="What needs to be done" class="todo-input" v-model="newTodo" @keyup.enter="addTodo">
-        
-        <div v-if="todosFilter.length > 0">
 
-            <div v-for="(todo, index) in todosFilter" :key="todo.id" class="todo-item">
-                <input type="checkbox" v-model="todo.completed">
-                <div  class="todo-item-left">
-                    <div v-if="!todo.editing" class="todo-item-label" :class="{ completed : todo.completed}" @dblclick="editTodo(todo)">{{ todo.title }}</div>
-                    <input v-else type="text" v-focus v-model="todo.title" class="todo-item-edit" @keyup.enter="updateTodo(todo)" @blur="updateTodo(todo)" @keyup.escape="cancelEdit(todo)">
-                </div>
-                
-                
-                <div class="remove-item" @click="removeTodo(index)">
-                    &times;
-                </div>
-            </div>
+        <div v-if="todosFilter.length > 0">
+            <todo-item v-for="todo in todosFilter" :key="todo.id" class="todo-item" :todo="todo" @removedTodo="removeTodo" @updatedTodo="updateTodo" />
         </div>
         <div v-else>No Todos Found</div>
 
@@ -48,8 +36,13 @@
   
   <script>
 
+  import TodoItem from './TodoItem.vue';
+
   export default {
     name: 'TodoList',
+    components: {
+        TodoItem
+    },
     data () {
       return {
         newTodo: '',
@@ -66,7 +59,7 @@
             {
                 'id': 2,
                 'title': 'Take over',
-                'completed': true,
+                'completed': false,
                 'editing': false
             },
             {
@@ -130,25 +123,17 @@
             this.idForTodo++
         },
 
-        removeTodo(index){
-            this.todos.splice(index, 1);
+        removeTodo(todoToBeDeleted){
+            this.todos = this.todos.filter(todo => todo.id !== todoToBeDeleted.id);
         },
-        editTodo(todo){
-            this.beforeEditCache = todo.title;
-            todo.editing = true
-        },
-        updateTodo(todo){
-            if(todo.title.trim().length == 0){
-                todo.title = this.beforeEditCache;
-                todo.editing = false;
-                return;
-            }
 
-            todo.title = todo.title;
-        },
-        cancelEdit(todo){
-            todo.title = this.beforeEditCache;
-            todo.editing = false;
+        updateTodo(todoToUpdate, newTitle){
+                const todo = this.todos.find(todo => todo === todoToUpdate);
+                
+                if(todo){
+                    todo.title = newTitle;
+                    todo.editing = false;
+                }
         },
         checkAllTodos(){
             const isChecked = event.target.checked;
@@ -163,7 +148,7 @@
   </script>
   
   <!-- Add "scoped" attribute to limit CSS to this component only -->
-  <style scoped>
+  <style>
   @import url("https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css");
 
 .todo-input {
@@ -185,13 +170,6 @@
   animation-duration: 0.3s;
 }
 
-.remove-item {
-  cursor: pointer;
-  margin-left: 14px;
-  &:hover {
-    color: black;
-  }
-}
 
 .todo-item-left {
   display: flex;
@@ -202,6 +180,15 @@
   padding: 10px;
   border: 1px solid white;
   margin-left: 12px;
+}
+
+.remove-item {
+  cursor: pointer;
+  margin-left: 14px;
+}
+
+.remove-item:hover {
+  color: black;
 }
 
 .todo-item-edit {
