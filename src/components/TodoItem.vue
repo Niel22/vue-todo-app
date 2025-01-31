@@ -33,6 +33,7 @@ export default{
         removeTodo(){
             this.$store.dispatch('removeTodo', this.todo.id);
         },
+
         editTodo(){
             this.beforeEditCache = this.todo.title;
             this.todo.editing = true
@@ -43,6 +44,7 @@ export default{
         },
         updateTodo(){
             if(this.todo.title.trim().length == 0){
+                alert('Title Cannot be empty');
                 this.todo.title = this.beforeEditCache;
                 this.todo.editing = false;
                 return;

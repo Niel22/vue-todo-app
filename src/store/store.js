@@ -1,34 +1,16 @@
 import Vue from "vue";
 import Vuex from 'vuex';
+import axios from "axios";
 
 Vue.use(Vuex);
+axios.defaults.baseURL = 'http://127.0.0.1:8000';
 
 export const store = new Vuex.Store({
     state: {
         newTodo: '',
         idForTodo: 4,
         filter: '',
-        todos: [
-            {
-                'id': 1,
-                'title': 'Finish vue screen cast',
-                'completed': false,
-                'editing': false
-            },
-            {
-                'id': 2,
-                'title': 'Take over',
-                'completed': false,
-                'editing': false
-            },
-            {
-                'id': 3,
-                'title': 'Take over the world',
-                'completed': false,
-                'editing': false
-            },
-
-        ]
+        todos: []
     },
     getters: {
         remaining(state){
@@ -58,20 +40,16 @@ export const store = new Vuex.Store({
     },
     mutations: {
         addTodo(state, todo){
-            state.todos.push({
-                id: todo.id,
-                title: todo.title,
-                completed: todo.completed,
-                editing: todo.editing
-            });
+            todo.editing = false;
+            state.todos.push(todo);
         },
         clearCompleted(state){
             state.todos = state.todos.filter(todo => !todo.completed);
         },
-        updateTodo(state, {id, newTitle}){
-            const todo = state.todos.find(todo => todo.id === id);
+        updateTodo(state, data){
+            const todo = state.todos.find(todo => todo.id === data.id);
             if(todo){
-                todo.title = newTitle;
+                todo.title = data.title;
                 todo.editing = false;
             }
         },
@@ -84,15 +62,26 @@ export const store = new Vuex.Store({
         setFilter(state, filter){
             state.filter = filter;
         },
-        checkAllTodos(state){
-            state.todos.forEach((todo) => todo.completed = !todo.completed);
+        checkAllTodos(state, event){
+            state.todos.forEach((todo) => todo.completed = event);
+        },
+        fetchAllTodos(state, task){
+            task.forEach(item => item.editing = false);
+            state.todos = task;
         }
     },
     actions: {
         addTodo(context, todo){
-            context.commit('addTodo', todo);
-            setTimeout(() => {
-            }, 1000);
+            axios
+              .post("/api/task", {
+                title: todo.title
+              })
+              .then((res) => {
+                context.commit('addTodo', res.data.data);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
         },
         clearCompleted(context){
             setTimeout(() => {
@@ -100,9 +89,16 @@ export const store = new Vuex.Store({
             }, 1000);
         },
         updateTodo(context, {id, newTitle}){
-            setTimeout(() => {
-                context.commit('updateTodo', {id, newTitle});
-            }, 1000);
+            axios
+              .put(`/api/task/${id}`, {
+                title: newTitle
+              })
+              .then((res) => {
+                context.commit('updateTodo', res.data.data);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
         },
         handlePluralize(context){
             setTimeout(() => {
@@ -119,10 +115,18 @@ export const store = new Vuex.Store({
                 context.commit('setFilter', filter);
             }, 1000);
         },
-        checkAllTodos(context){
-            setTimeout(() => {
-                context.commit('checkAllTodos');
-            }, 1000);
+        checkAllTodos(context, event){
+                context.commit('checkAllTodos', event);
+        },
+        fetchAllTodos(context){
+            axios
+              .get("/api/task")
+              .then((res) => {
+                context.commit('fetchAllTodos', res.data.data);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
         }
     }
 })

@@ -40,6 +40,9 @@
             return this.$store.getters.todosFilter;
         },
     },
+    created(){
+      this.$store.dispatch('fetchAllTodos');
+    }
   }
   </script>
   
