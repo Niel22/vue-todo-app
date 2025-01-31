@@ -37,7 +37,7 @@ export default{
     },
     methods: {
         removeTodo(){
-            eventBus.$emit('removedTodo', this.todo);
+            this.$store.state.todos = this.$store.state.todos.filter(todo => todo.id !== this.todo.id);
         },
         editTodo(){
             this.beforeEditCache = this.todo.title;
@@ -53,9 +53,14 @@ export default{
                 this.todo.editing = false;
                 return;
             }
-            
-            this.todo.editing = false;
-            eventBus.$emit('updatedTodo', this.todo.id, this.todo.title);
+
+            const todo = this.$store.state.todos.find(todo => todo.id === this.todo.id);
+                
+            if(todo){
+                todo.title = this.todo.title;
+                todo.editing = false;
+            }
+            todo.editing = false;
         },
         pluralize(){
             eventBus.$emit('pluralize');

@@ -8,21 +8,19 @@
 <script>
 export default {
     name: "TodoItemsRemaining",
-    props: {
-        remaining: {
-            type: Number,
-            required: true
-        }
-    },
     computed: {
         anyRemaining(){
-            return this.remaining > 0
+            return this.$store.getters.anyRemaining;
+        },
+        remaining(){
+            return this.$store.getters.remaining;
         }
     },
     methods: {
         checkAllTodos(){
-            this.$emit('checkedAllTodos');
-        }
+            const isChecked = event.target.checked;
+            this.$store.state.todos.forEach((todo) => todo.completed = isChecked);
+        },
     }
 }
 </script>

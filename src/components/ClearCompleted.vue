@@ -9,16 +9,15 @@
 <script>
 export default {
     name: 'ClearCompleted',
-    props: {
-        showClearCompletedButton: {
-            type: Boolean,
-            required: true
+    computed: {
+        showClearCompletedButton(){
+            return this.$store.getters.showClearCompletedButton
         }
     },
     methods: {
         clearCompleted(){
-            this.$emit('clearedCompleted');
-        }
+            this.$store.state.todos = this.$store.state.todos.filter(todo => !todo.completed);
+        },
     }
 }
 </script>

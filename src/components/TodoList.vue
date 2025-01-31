@@ -1,6 +1,6 @@
 <template>
     <div>
-        <AddTodo  @addedTodo="addTodo"/>
+        <AddTodo/>
 
         <div v-if="todosFilter.length > 0">
             <TodoItem v-for="todo in todosFilter" :key="todo.id" class="todo-item" :todo="todo" />
@@ -8,12 +8,12 @@
         <div v-else>No Todos Found</div>
 
 
-        <TodoItemsRemaining class="extra-container" :remaining="remaining" @checkedAllTodos="checkAllTodos"/>
+        <TodoItemsRemaining class="extra-container"/>
 
         <div class="extra-container">
-            <TodoFilter :filter="filter" @updatedFilter="setFilter"/>
+            <TodoFilter />
 
-            <ClearCompleted :showClearCompletedButton="showClearCompletedButton" @clearedCompleted="clearCompleted"/>
+            <ClearCompleted/>
         </div>
     </div>
   </template>
@@ -35,88 +35,11 @@
         ClearCompleted,
         AddTodo
     },
-    data () {
-      return {
-        idForTodo: 4,
-      }
-    },
-    created(){
-      eventBus.$on('removedTodo', (todoToBeDeleted) => this.removeTodo(todoToBeDeleted));
-      eventBus.$on('updatedTodo', (todoToUpdate, newTitle) => this.updateTodo(todoToUpdate, newTitle));
-    },
     computed: {
-        remaining(){
-            return this.$store.state.todos.filter(todo => !todo.completed).length;
-        },
-        anyRemaining(){
-            return this.remaining !== 0;
-        },
         todosFilter(){
-            if(this.$store.state.filter === 'all'){
-                return this.$store.state.todos;
-            }
-
-            if(this.$store.state.filter === 'active'){
-                return this.$store.state.todos.filter(todo => !todo.completed);
-            }
-
-            if(this.$store.state.filter === 'completed'){
-                return this.$store.state.todos.filter(todo => todo.completed);
-            }
-
-            return this.$store.state.todos;
+            return this.$store.getters.todosFilter;
         },
-        showClearCompletedButton(){
-            return this.$store.state.todos.filter(todo => todo.completed).length > 0;
-        },
-        filter(){
-          return this.$store.state.filter;
-        }
     },
-    directives: {
-        focus: {
-            inserted: function(el){
-                el.focus();
-            }
-        }
-    },
-    methods: {
-        addTodo(newTodo){
-            this.$store.state.todos.push({
-                id: this.idForTodo,
-                title: newTodo,
-                completed: false,
-                editing: false
-            });
-
-            this.idForTodo++
-        },
-
-        removeTodo(todoToBeDeleted){
-            this.$store.state.todos = this.$store.state.todos.filter(todo => todo.id !== todoToBeDeleted.id);
-        },
-
-        updateTodo(todoToUpdate, newTitle){
-                const todo = this.$store.state.todos.find(todo => todo === todoToUpdate);
-                
-                if(todo){
-                    todo.title = newTitle;
-                    todo.editing = false;
-                }
-        },
-        checkAllTodos(){
-            const isChecked = event.target.checked;
-            this.$store.state.todos.forEach((todo) => todo.completed = isChecked);
-            console.log(this.$store.state.todos);
-        },
-        clearCompleted(){
-            this.$store.state.todos = this.$store.state.todos.filter(todo => !todo.completed);
-        },
-        setFilter(filter){
-          this.$store.state.filter = filter;
-        }
-        
-    }
   }
   </script>
   

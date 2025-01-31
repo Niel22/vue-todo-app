@@ -15,15 +15,14 @@
 <script>
 export default {
     name: "TodoFilter",
-    props: {
-        filter:  {
-            type: String,
-            required: true
+    computed: {
+        filter(){
+            return this.$store.state.filter;
         }
     },
     methods: {
         setFilter(filter){
-            this.$emit('updatedFilter', filter);
+          this.$store.state.filter = filter;
         }
     }
 }
