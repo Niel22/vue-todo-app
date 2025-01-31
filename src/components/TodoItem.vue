@@ -1,32 +1,34 @@
 <template>
-    <div class="todo-item">
-        <input type="checkbox" v-model="todo.completed">
-        <div  class="todo-item-left">
-            <div v-if="!todo.editing" class="todo-item-label" :class="{ completed : todo.completed}" @dblclick="editTodo">{{ todo.title }}</div>
-            <input v-else type="text" v-focus v-model="todo.title" class="todo-item-edit" @keyup.enter="updateTodo" @blur="updateTodo" @keyup.escape="cancelEdit">
-        </div>
-        <div>
-            <button @click="pluralize">Plural</button>
-            <span class="remove-item" @click="removeTodo">
-                &times;
-            </span>
-        </div>
+    <div v-if="todosFilter.length > 0">
+        <div class="todo-item" v-for="todo in todosFilter">
+            <input type="checkbox" v-model="todo.completed">
+            <div  class="todo-item-left">
+                <div v-if="!todo.editing" class="todo-item-label" :class="{ completed : todo.completed}" @dblclick="editTodo">{{ todo.title }}</div>
+                <input v-else type="text" v-focus v-model="todo.title" class="todo-item-edit" @keyup.enter="updateTodo" @blur="updateTodo" @keyup.escape="cancelEdit">
+            </div>
+            <div>
+                <button @click="pluralize">Plural</button>
+                <span class="remove-item" @click="removeTodo">
+                    &times;
+                </span>
+            </div>
 
+        </div>
     </div>
+    <div v-else>No Todos Found</div>
 </template>
 
 <script>
 export default{
     name: 'TodoItem',
-    props: {
-        todo: {
-            type: Object,
-            required: true
-        }
-    },
     data(){
         return {
             beforeEditCache: ''
+        }
+    },
+    computed: {
+        todosFilter(){
+            return this.$store.getters.todosFilter
         }
     },
     created(){

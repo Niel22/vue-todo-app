@@ -2,13 +2,9 @@
     <div>
         <AddTodo/>
 
-        <div v-if="todosFilter.length > 0">
-            <TodoItem v-for="todo in todosFilter" :key="todo.id" class="todo-item" :todo="todo" />
-        </div>
-        <div v-else>No Todos Found</div>
-
-
-        <TodoItemsRemaining class="extra-container"/>
+        <TodoItem />
+        
+        <TodoItemsRemaining />
 
         <div class="extra-container">
             <TodoFilter />
@@ -34,11 +30,6 @@
         TodoFilter,
         ClearCompleted,
         AddTodo
-    },
-    computed: {
-        todosFilter(){
-            return this.$store.getters.todosFilter;
-        },
     },
   }
   </script>
