@@ -66,8 +66,10 @@ export const store = new Vuex.Store({
             state.todos.forEach((todo) => todo.completed = event);
         },
         fetchAllTodos(state, task){
-            task.forEach(item => item.editing = false);
-            state.todos = task;
+            if(Array.isArray(task)){
+                task.forEach(item => item.editing = false);
+                state.todos = task;
+            }
         }
     },
     actions: {
@@ -84,14 +86,20 @@ export const store = new Vuex.Store({
               });
         },
         clearCompleted(context){
-            setTimeout(() => {
-                context.commit('clearCompleted');
-            }, 1000);
-        },
-        updateTodo(context, {id, newTitle}){
             axios
-              .put(`/api/task/${id}`, {
-                title: newTitle
+              .get('api/task/clear-completed')
+              .then((res) => {
+                context.commit('clearCompleted');
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+        },
+        updateTodo(context, {id, newTitle, completed}){
+            axios
+              .patch(`/api/task/${id}`, {
+                title: newTitle,
+                completed: completed
               })
               .then((res) => {
                 context.commit('updateTodo', res.data.data);
@@ -106,17 +114,28 @@ export const store = new Vuex.Store({
             }, 1000);
         },
         removeTodo(context, id){
-            setTimeout(() => {
+            axios
+              .delete("/api/task/" + id)
+              .then((res) => {
                 context.commit('removeTodo', id);
-            }, 1000);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+                
         },
         setFilter(context, filter){
-            setTimeout(() => {
                 context.commit('setFilter', filter);
-            }, 1000);
         },
         checkAllTodos(context, event){
-                context.commit('checkAllTodos', event);
+            axios
+              .get("/api/task/complete-all?status=" + event)
+              .then((res) => {
+                  context.commit('checkAllTodos', event);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
         },
         fetchAllTodos(context){
             axios

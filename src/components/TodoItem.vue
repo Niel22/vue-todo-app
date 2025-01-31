@@ -1,6 +1,6 @@
 <template>
     <div class="todo-item">
-        <input type="checkbox" v-model="todo.completed">
+        <input type="checkbox" v-model="todo.completed" @change="updateTodo">
         <div  class="todo-item-left">
             <div v-if="!todo.editing" class="todo-item-label" :class="{ completed : todo.completed}" @dblclick="editTodo">{{ todo.title }}</div>
             <input v-else type="text" v-focus v-model="todo.title" class="todo-item-edit" @keyup.enter="updateTodo" @blur="updateTodo" @keyup.escape="cancelEdit">
@@ -50,7 +50,7 @@ export default{
                 return;
             }
 
-            this.$store.dispatch('updateTodo', {id: this.todo.id, newTitle: this.todo.title});
+            this.$store.dispatch('updateTodo', {id: this.todo.id, newTitle: this.todo.title, completed: this.todo.completed});
         },
         handlePluralize(){
             this.$store.dispatch('handlePluralize');
