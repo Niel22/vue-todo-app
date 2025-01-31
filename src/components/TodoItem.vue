@@ -37,7 +37,7 @@ export default{
     },
     methods: {
         removeTodo(){
-            this.$store.state.todos = this.$store.state.todos.filter(todo => todo.id !== this.todo.id);
+            this.$store.commit('removeTodo', this.todo.id);
         },
         editTodo(){
             this.beforeEditCache = this.todo.title;
@@ -54,19 +54,13 @@ export default{
                 return;
             }
 
-            const todo = this.$store.state.todos.find(todo => todo.id === this.todo.id);
-                
-            if(todo){
-                todo.title = this.todo.title;
-                todo.editing = false;
-            }
-            todo.editing = false;
+            this.$store.commit('updateTodo', {id: this.todo.id, newTitle: this.todo.title});
         },
         pluralize(){
             eventBus.$emit('pluralize');
         },
         handlePluralize(){
-            this.todo.title += 's';
+            this.$store.commit('handlePluralize', this.todo.id);
         }
     },
     directives: {

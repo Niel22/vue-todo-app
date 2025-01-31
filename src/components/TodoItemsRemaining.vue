@@ -18,8 +18,7 @@ export default {
     },
     methods: {
         checkAllTodos(){
-            const isChecked = event.target.checked;
-            this.$store.state.todos.forEach((todo) => todo.completed = isChecked);
+            this.$store.commit('checkAllTodos');
         },
     }
 }

@@ -14,12 +14,13 @@ export default {
                 return;
             }
 
-            this.$store.state.todos.push({
+            this.$store.commit('addTodo', {
                 id: this.idForTodo,
                 title: this.$store.state.newTodo,
                 completed: false,
                 editing: false
             });
+
             this.$store.state.idForTodo++
             this.$store.state.newTodo = '';
         }

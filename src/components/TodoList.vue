@@ -39,9 +39,6 @@
         todosFilter(){
             return this.$store.getters.todosFilter;
         },
-        showClearCompletedButton(){
-            return this.$store.getters.showClearCompletedButton;
-        },
     },
   }
   </script>

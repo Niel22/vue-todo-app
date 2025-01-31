@@ -22,7 +22,7 @@ export default {
     },
     methods: {
         setFilter(filter){
-          this.$store.state.filter = filter;
+            this.$store.commit('setFilter', filter);
         }
     }
 }
