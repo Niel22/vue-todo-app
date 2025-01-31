@@ -75,11 +75,8 @@ export const store = new Vuex.Store({
                 todo.editing = false;
             }
         },
-        handlePluralize(state, id){
-            const todo = state.todos.find(todo => todo.id === id);
-            if(todo){
-                todo.title += 's';
-            }
+        handlePluralize(state){
+            state.todos.forEach(todo => todo.title += 's');
         },
         removeTodo(state, id){
             state.todos = state.todos.filter(todo => todo.id !== id);
@@ -88,8 +85,44 @@ export const store = new Vuex.Store({
             state.filter = filter;
         },
         checkAllTodos(state){
-            const isChecked = event.target.checked;
-            state.todos.forEach((todo) => todo.completed = isChecked);
+            state.todos.forEach((todo) => todo.completed = !todo.completed);
+        }
+    },
+    actions: {
+        addTodo(context, todo){
+            context.commit('addTodo', todo);
+            setTimeout(() => {
+            }, 1000);
+        },
+        clearCompleted(context){
+            setTimeout(() => {
+                context.commit('clearCompleted');
+            }, 1000);
+        },
+        updateTodo(context, {id, newTitle}){
+            setTimeout(() => {
+                context.commit('updateTodo', {id, newTitle});
+            }, 1000);
+        },
+        handlePluralize(context){
+            setTimeout(() => {
+                context.commit('handlePluralize');
+            }, 1000);
+        },
+        removeTodo(context, id){
+            setTimeout(() => {
+                context.commit('removeTodo', id);
+            }, 1000);
+        },
+        setFilter(context, filter){
+            setTimeout(() => {
+                context.commit('setFilter', filter);
+            }, 1000);
+        },
+        checkAllTodos(context){
+            setTimeout(() => {
+                context.commit('checkAllTodos');
+            }, 1000);
         }
     }
 })

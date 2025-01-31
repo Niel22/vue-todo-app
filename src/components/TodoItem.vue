@@ -6,7 +6,7 @@
             <input v-else type="text" v-focus v-model="todo.title" class="todo-item-edit" @keyup.enter="updateTodo" @blur="updateTodo" @keyup.escape="cancelEdit">
         </div>
         <div>
-            <button @click="pluralize">Plural</button>
+            <button @click="handlePluralize">Plural</button>
             <span class="remove-item" @click="removeTodo">
                 &times;
             </span>
@@ -29,15 +29,9 @@ export default{
             beforeEditCache: ''
         }
     },
-    created(){
-        eventBus.$on('pluralize', this.handlePluralize);
-    },
-    beforeDestroy(){
-        eventBus.$off('pluralize', this.handlePluralize);
-    },
     methods: {
         removeTodo(){
-            this.$store.commit('removeTodo', this.todo.id);
+            this.$store.dispatch('removeTodo', this.todo.id);
         },
         editTodo(){
             this.beforeEditCache = this.todo.title;
@@ -54,13 +48,10 @@ export default{
                 return;
             }
 
-            this.$store.commit('updateTodo', {id: this.todo.id, newTitle: this.todo.title});
-        },
-        pluralize(){
-            eventBus.$emit('pluralize');
+            this.$store.dispatch('updateTodo', {id: this.todo.id, newTitle: this.todo.title});
         },
         handlePluralize(){
-            this.$store.commit('handlePluralize', this.todo.id);
+            this.$store.dispatch('handlePluralize');
         }
     },
     directives: {

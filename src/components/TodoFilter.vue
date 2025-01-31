@@ -22,7 +22,7 @@ export default {
     },
     methods: {
         setFilter(filter){
-            this.$store.commit('setFilter', filter);
+            this.$store.dispatch('setFilter', filter);
         }
     }
 }
