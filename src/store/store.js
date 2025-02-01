@@ -10,7 +10,8 @@ export const store = new Vuex.Store({
         newTodo: '',
         idForTodo: 4,
         filter: '',
-        todos: []
+        todos: [],
+        todo: null
     },
     getters: {
         remaining(state){
@@ -37,6 +38,7 @@ export const store = new Vuex.Store({
         showClearCompletedButton(state){
             return state.todos.filter(todo => todo.completed).length > 0;
         },
+        
     },
     mutations: {
         addTodo(state, todo){
@@ -70,7 +72,7 @@ export const store = new Vuex.Store({
                 task.forEach(item => item.editing = false);
                 state.todos = task;
             }
-        }
+        },
     },
     actions: {
         addTodo(context, todo){
