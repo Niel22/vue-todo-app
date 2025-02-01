@@ -81,9 +81,10 @@ export const store = new Vuex.Store({
                 title: todo.title
               })
               .then((res) => {
-                context.commit('addTodo', res.data.data);
-              })
-              .catch((err) => {
+                context.commit('addTodo', todo);
+            })
+            .catch((err) => {
+                context.commit('addTodo', todo);
                 console.log(err);
               });
         },
